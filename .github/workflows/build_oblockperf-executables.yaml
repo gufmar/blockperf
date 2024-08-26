@@ -5,6 +5,8 @@ on:
     branches:
       - dev01
   pull_request:
+    branches:
+      - dev01
 
 jobs:
   build_python_38:
@@ -24,13 +26,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y patchelf ccache
+          sudo apt-get install -y patchelf
           pip install nuitka paho-mqtt
 
-      - name: Build the executable with Nuitka
+      - name: Build the executable with Nuitka (Static libpython)
         run: |
           cd src
-          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} blockperf/cli.py
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} --static-libpython=yes blockperf/cli.py
 
       - name: Package the output
         run: |
@@ -38,7 +40,7 @@ jobs:
           tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: oblockperf-${{ matrix.python-version }}
           path: build/oblockperf_${{ matrix.python-version }}.tar.gz
@@ -60,13 +62,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y patchelf ccache
+          sudo apt-get install -y patchelf
           pip install nuitka paho-mqtt
 
-      - name: Build the executable with Nuitka
+      - name: Build the executable with Nuitka (Static libpython)
         run: |
           cd src
-          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} blockperf/cli.py
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} --static-libpython=yes blockperf/cli.py
 
       - name: Package the output
         run: |
@@ -74,7 +76,7 @@ jobs:
           tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: oblockperf-${{ matrix.python-version }}
           path: build/oblockperf_${{ matrix.python-version }}.tar.gz
