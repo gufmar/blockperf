@@ -1,0 +1,80 @@
+name: Build Standalone Executables with Nuitka
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-python-3.8:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8']
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y patchelf ccache
+          pip install nuitka paho-mqtt
+
+      - name: Build the executable with Nuitka
+        run: |
+          cd src
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} cli.py
+
+      - name: Package the output
+        run: |
+          cd build
+          tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: oblockperf-${{ matrix.python-version }}
+          path: build/oblockperf_${{ matrix.python-version }}.tar.gz
+
+  build-python-3.10:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10']
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y patchelf ccache
+          pip install nuitka paho-mqtt
+
+      - name: Build the executable with Nuitka
+        run: |
+          cd src
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} cli.py
+
+      - name: Package the output
+        run: |
+          cd build
+          tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: oblockperf-${{ matrix.python-version }}
+          path: build/oblockperf_${{ matrix.python-version }}.tar.gz
