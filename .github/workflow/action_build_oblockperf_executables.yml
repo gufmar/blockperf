@@ -3,7 +3,7 @@ name: Build Standalone Executables with Nuitka
 on:
   push:
     branches:
-      - main
+      - dev01
   pull_request:
 
 jobs:
