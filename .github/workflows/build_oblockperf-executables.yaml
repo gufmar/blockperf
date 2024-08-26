@@ -9,7 +9,7 @@ on:
       - dev01
 
 env:
-  RELEASE_VERSION: "v0.1.4" # Set your desired release version here
+  RELEASE_VERSION: "v0.1.0" # Set your desired release version here
   RELEASE_DESCRIPTION: |
     ## Automated Release Notes
     This release includes standalone executables for:
@@ -22,6 +22,9 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.10']
+    outputs:
+      artifact_url_3_8: ${{ steps.upload.outputs.artifact_url_3_8 }}
+      artifact_url_3_10: ${{ steps.upload.outputs.artifact_url_3_10 }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -50,10 +53,13 @@ jobs:
           tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
 
       - name: Upload build artifact
+        id: upload
         uses: actions/upload-artifact@v4
         with:
-          name: "oblockperf-${{ matrix.python-version }}" # Explicitly name each artifact
+          name: "oblockperf-${{ matrix.python-version }}"
           path: build/oblockperf_${{ matrix.python-version }}.tar.gz
+      - name: Capture artifact URL for later use
+        run: echo "artifact_url=${{ steps.upload.outputs.artifact_url }}" >> $GITHUB_ENV
 
   create_release:
     runs-on: ubuntu-latest
@@ -69,17 +75,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gh
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: "oblockperf-3.8" # Specify the exact artifact names
-          path: ./artifacts/oblockperf-3.8
-
-      - name: Download artifacts for Python 3.10
-        uses: actions/download-artifact@v3
-        with:
-          name: "oblockperf-3.10" # Specify the exact artifact names
-          path: ./artifacts/oblockperf-3.10
+      - name: Download artifacts using URLs
+        run: |
+          curl -o oblockperf-3.8.tar.gz "${{ needs.build.outputs.artifact_url_3_8 }}"
+          curl -o oblockperf-3.10.tar.gz "${{ needs.build.outputs.artifact_url_3_10 }}"
 
       - name: Create a release
         env:
@@ -91,4 +90,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload ${{ env.RELEASE_VERSION }} ./artifacts/oblockperf-3.8/oblockperf-3.8.tar.gz ./artifacts/oblockperf-3.10/oblockperf-3.10.tar.gz
+          gh release upload ${{ env.RELEASE_VERSION }} oblockperf-3.8.tar.gz oblockperf-3.10.tar.gz
