@@ -9,10 +9,10 @@ on:
       - dev01
 
 env:
-  RELEASE_VERSION: "v0.1.1" # Set your desired release version here
+  RELEASE_VERSION: "v0.1.2" # Set your desired release version here
   RELEASE_DESCRIPTION: |
     ## Automated Release Notes
-    This release includes blockperf standalone executables for:
+    This release includes standalone executables for:
     - Python 3.8
     - Python 3.10
 
@@ -69,16 +69,17 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gh
 
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: oblockperf-${{ matrix.python-version }}
+          path: ./artifacts # Specify the path to store downloaded artifacts
+
       - name: Create a release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${{ env.RELEASE_VERSION }} --notes "${{ env.RELEASE_DESCRIPTION }}"
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
-        with:
-          path: ./artifacts
 
       - name: Upload artifacts to release
         env:
