@@ -9,9 +9,10 @@ on:
       - dev01
 
 env:
-  RELEASE_VERSION: "v0.1.0" # Set your desired release version here
+  RELEASE_VERSION: "v0.1.1" # Set your desired release version here
   RELEASE_DESCRIPTION: |
-    This is a test release with oblockperf standalone executables for:
+    ## Automated Release Notes
+    This release includes blockperf standalone executables for:
     - Python 3.8
     - Python 3.10
 
@@ -24,6 +25,8 @@ jobs:
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetches the entire history so the repository is a full clone
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
@@ -56,6 +59,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Checkout the code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch the entire history including tags
+
       - name: Install GitHub CLI
         run: |
           sudo apt-get update
