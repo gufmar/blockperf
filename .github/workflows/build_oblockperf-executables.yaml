@@ -30,7 +30,7 @@ jobs:
       - name: Build the executable with Nuitka
         run: |
           cd src
-          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} cli.py
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} blockperf/cli.py
 
       - name: Package the output
         run: |
@@ -66,7 +66,7 @@ jobs:
       - name: Build the executable with Nuitka
         run: |
           cd src
-          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} cli.py
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} blockperf/cli.py
 
       - name: Package the output
         run: |
