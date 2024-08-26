@@ -78,8 +78,8 @@ def main():
     args = setup_argparse()
     setup_logger(args.debug)
     # Ensure there is only one instance of blockperf running
-    if already_running():
-        sys.exit("Blockperf is already running")
+    #if already_running():
+    #    sys.exit("Blockperf is already running")
 
     app_config = AppConfig()
     app = App(app_config)
