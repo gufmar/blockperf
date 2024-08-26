@@ -23,8 +23,8 @@ jobs:
       matrix:
         python-version: ['3.8', '3.10']
     outputs:
-      artifact_url_3_8: ${{ steps.upload.outputs.artifact_url_3_8 }}
-      artifact_url_3_10: ${{ steps.upload.outputs.artifact_url_3_10 }}
+      artifact_url_3_8: ${{ steps.fetch_artifact_url.outputs.artifact_url_3_8 }}
+      artifact_url_3_10: ${{ steps.fetch_artifact_url.outputs.artifact_url_3_10 }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -53,13 +53,18 @@ jobs:
           tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
 
       - name: Upload build artifact
-        id: upload
         uses: actions/upload-artifact@v4
         with:
           name: "oblockperf-${{ matrix.python-version }}"
           path: build/oblockperf_${{ matrix.python-version }}.tar.gz
-      - name: Capture artifact URL for later use
-        run: echo "artifact_url=${{ steps.upload.outputs.artifact_url }}" >> $GITHUB_ENV
+
+      - name: Fetch Artifact URL
+        id: fetch_artifact_url
+        run: |
+          ARTIFACT_NAME="oblockperf-${{ matrix.python-version }}"
+          ARTIFACT_URL=$(gh api -H "Accept: application/vnd.github.v3+json" /repos/${{ github.repository }}/actions/artifacts | jq -r ".artifacts[] | select(.name==\"${ARTIFACT_NAME}\") | .archive_download_url")
+          echo "artifact_url=${ARTIFACT_URL}" >> $GITHUB_ENV
+        shell: bash
 
   create_release:
     runs-on: ubuntu-latest
@@ -73,7 +78,7 @@ jobs:
       - name: Install GitHub CLI
         run: |
           sudo apt-get update
-          sudo apt-get install -y gh
+          sudo apt-get install -y gh jq
 
       - name: Download artifacts using URLs
         run: |
