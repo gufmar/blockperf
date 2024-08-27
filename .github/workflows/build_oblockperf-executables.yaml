@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.8, 3.10]
+        python-version: ["3.8", "3.10"]
         architecture: [x86_64, arm64]
         os: [ubuntu-20.04, ubuntu-22.04]
         include:
