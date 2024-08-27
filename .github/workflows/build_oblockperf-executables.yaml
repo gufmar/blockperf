@@ -12,17 +12,30 @@ env:
   RELEASE_VERSION: "v0.1.1"
   RELEASE_DESCRIPTION: |
     This blockperf release includes standalone x86_64 and arm64 Linux executables for:
-    - Python 3.8
-    - Python 3.10
+    - Python 3.8 on Ubuntu 20.04 LTS
+    - Python 3.10 on Ubuntu 22.04 LTS
 
 jobs:
   build:
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.8', '3.10']
+        python-version: [3.8, 3.10]
         architecture: [x86_64, arm64]
-        os: [ubuntu-20.04, ubuntu-latest]
-    runs-on: ${{ matrix.os }}
+        os: [ubuntu-20.04, ubuntu-22.04]
+        include:
+          - python-version: 3.8
+            architecture: x86_64
+            os: ubuntu-20.04
+          - python-version: 3.8
+            architecture: arm64
+            os: ubuntu-20.04
+          - python-version: 3.10
+            architecture: x86_64
+            os: ubuntu-22.04
+          - python-version: 3.10
+            architecture: arm64
+            os: ubuntu-22.04
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -54,7 +67,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}"
+          name: "oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}_${{ matrix.os }}"
           path: build/oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}.zip
 
   create_release:
@@ -78,66 +91,66 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download artifact for Python 3.8 (x86_64)
+      - name: Download artifact for Python 3.8 (x86_64 on Ubuntu 20.04)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.8_x86_64"
+          name: "oblockperf_3.8_x86_64_ubuntu-20.04"
           path: ./artifacts
 
-      - name: Download artifact for Python 3.8 (arm64)
+      - name: Download artifact for Python 3.8 (arm64 on Ubuntu 20.04)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.8_arm64"
+          name: "oblockperf_3.8_arm64_ubuntu-20.04"
           path: ./artifacts
 
-      - name: Download artifact for Python 3.10 (x86_64)
+      - name: Download artifact for Python 3.10 (x86_64 on Ubuntu 22.04)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.10_x86_64"
+          name: "oblockperf_3.10_x86_64_ubuntu-22.04"
           path: ./artifacts
 
-      - name: Download artifact for Python 3.10 (arm64)
+      - name: Download artifact for Python 3.10 (arm64 on Ubuntu 22.04)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.10_arm64"
+          name: "oblockperf_3.10_arm64_ubuntu-22.04"
           path: ./artifacts
 
-      - name: Upload Python 3.8 (x86_64) artifact to the release
+      - name: Upload Python 3.8 (x86_64 on Ubuntu 20.04) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.8_x86_64.zip
-          asset_name: oblockperf_3.8_x86_64.zip
+          asset_path: ./artifacts/oblockperf_3.8_x86_64_ubuntu-20.04.zip
+          asset_name: oblockperf_3.8_x86_64_ubuntu-20.04.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Python 3.8 (arm64) artifact to the release
+      - name: Upload Python 3.8 (arm64 on Ubuntu 20.04) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.8_arm64.zip
-          asset_name: oblockperf_3.8_arm64.zip
+          asset_path: ./artifacts/oblockperf_3.8_arm64_ubuntu-20.04.zip
+          asset_name: oblockperf_3.8_arm64_ubuntu-20.04.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Python 3.10 (x86_64) artifact to the release
+      - name: Upload Python 3.10 (x86_64 on Ubuntu 22.04) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10_x86_64.zip
-          asset_name: oblockperf_3.10_x86_64.zip
+          asset_path: ./artifacts/oblockperf_3.10_x86_64_ubuntu-22.04.zip
+          asset_name: oblockperf_3.10_x86_64_ubuntu-22.04.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Python 3.10 (arm64) artifact to the release
+      - name: Upload Python 3.10 (arm64 on Ubuntu 22.04) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10_arm64.zip
-          asset_name: oblockperf_3.10_arm64.zip
+          asset_path: ./artifacts/oblockperf_3.10_arm64_ubuntu-22.04.zip
+          asset_name: oblockperf_3.10_arm64_ubuntu-22.04.zip
           asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
