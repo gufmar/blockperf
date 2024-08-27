@@ -11,7 +11,7 @@ on:
 env:
   RELEASE_VERSION: "v0.1.0"
   RELEASE_DESCRIPTION: |
-    This blockperf release includes standalone x86 Linux executables for:
+    This blockperf release includes standalone x86_64 and arm64 Linux executables for systems on:
     - Python 3.8
     - Python 3.10
 
@@ -21,6 +21,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.10']
+        architecture: [x86_64, arm64] # Add both architectures
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -41,13 +42,13 @@ jobs:
       - name: Build the executable with Nuitka (Static libpython)
         run: |
           cd src
-          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} --static-libpython=yes blockperf/cli.py
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }} --static-libpython=yes blockperf/cli.py
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "oblockperf-${{ matrix.python-version }}"
-          path: build/oblockperf_${{ matrix.python-version }}
+          name: "oblockperf-${{ matrix.python-version }}-${{ matrix.architecture }}"
+          path: build/oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}
 
   create_release:
     runs-on: ubuntu-latest
@@ -70,37 +71,66 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download artifact for Python 3.8
+      - name: Download artifact for Python 3.8 (x86_64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf-3.8"
+          name: "oblockperf-3.8-x86_64"
           path: ./artifacts
 
-      - name: Download artifact for Python 3.10
+      - name: Download artifact for Python 3.8 (arm64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf-3.10"
+          name: "oblockperf-3.8-arm64"
           path: ./artifacts
 
-      - name: List files for debugging
-        run: ls -R ./artifacts
+      - name: Download artifact for Python 3.10 (x86_64)
+        uses: actions/download-artifact@v4
+        with:
+          name: "oblockperf-3.10-x86_64"
+          path: ./artifacts
 
-      - name: Upload Python 3.8 artifact to the release
+      - name: Download artifact for Python 3.10 (arm64)
+        uses: actions/download-artifact@v4
+        with:
+          name: "oblockperf-3.10-arm64"
+          path: ./artifacts
+
+      - name: Upload Python 3.8 (x86_64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.8 # Use the correct extracted file path
-          asset_name: oblockperf-3.8
+          asset_path: ./artifacts/oblockperf-3.8-x86_64
+          asset_name: oblockperf-3.8-x86_64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Python 3.10 artifact to the release
+      - name: Upload Python 3.8 (arm64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10 # Use the correct extracted file path
-          asset_name: oblockperf-3.10
+          asset_path: ./artifacts/oblockperf-3.8-arm64
+          asset_name: oblockperf-3.8-arm64
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Python 3.10 (x86_64) artifact to the release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/oblockperf-3.10-x86_64
+          asset_name: oblockperf-3.10-x86_64
+          asset_content_type: application/octet-stream
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Python 3.10 (arm64) artifact to the release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/oblockperf-3.10-arm64
+          asset_name: oblockperf-3.10-arm64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
