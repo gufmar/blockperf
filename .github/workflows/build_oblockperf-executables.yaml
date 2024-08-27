@@ -11,7 +11,7 @@ on:
 env:
   RELEASE_VERSION: "v0.1.0"
   RELEASE_DESCRIPTION: |
-    This blockperf release includes standalone x86_64 and arm64 Linux executables for:
+    This blockperf release includes standalone x86_64 and arm64 Linux executables for systems on:
     - Python 3.8
     - Python 3.10
 
