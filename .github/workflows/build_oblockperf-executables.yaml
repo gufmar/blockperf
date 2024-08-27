@@ -12,16 +12,17 @@ env:
   RELEASE_VERSION: "v0.1.1"
   RELEASE_DESCRIPTION: |
     This blockperf release includes standalone x86_64 and arm64 Linux executables for:
-    - Python 3.8
-    - Python 3.10
+    - Python 3.8 (built on Ubuntu 20.04 LTS)
+    - Python 3.10 (built on Ubuntu 22.04 LTS)
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: ['3.8', '3.10']
         architecture: [x86_64, arm64]
+        os: [ubuntu-20.04, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -114,29 +115,4 @@ jobs:
       - name: Upload Python 3.8 (arm64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.8_arm64.zip
-          asset_name: oblockperf_3.8_arm64.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Python 3.10 (x86_64) artifact to the release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10_x86_64.zip
-          asset_name: oblockperf_3.10_x86_64.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Python 3.10 (arm64) artifact to the release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10_arm64.zip
-          asset_name: oblockperf_3.10_arm64.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          upload_url: ${{ steps.create
