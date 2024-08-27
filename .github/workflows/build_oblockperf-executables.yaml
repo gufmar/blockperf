@@ -9,7 +9,7 @@ on:
       - dev01
 
 env:
-  RELEASE_VERSION: "v0.1.1"
+  RELEASE_VERSION: "v0.1.0"
   RELEASE_DESCRIPTION: |
     This blockperf release includes standalone x86_64 and arm64 Linux executables for:
     - Python 3.8
@@ -134,4 +134,9 @@ jobs:
       - name: Upload Python 3.10 (arm64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/oblockperf_3.10_arm64.zip
+          asset_name: oblockperf_3.10_arm64.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
