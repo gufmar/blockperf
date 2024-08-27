@@ -11,7 +11,7 @@ on:
 env:
   RELEASE_VERSION: "v0.1.0"
   RELEASE_DESCRIPTION: |
-    This blockperf release includes standalone x86_64 and arm64 Linux executables for systems on:
+    This blockperf release includes standalone x86_64 and arm64 Linux executables for:
     - Python 3.8
     - Python 3.10
 
@@ -47,7 +47,7 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "oblockperf-${{ matrix.python-version }}-${{ matrix.architecture }}"
+          name: "oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}" # Use underscores consistently
           path: build/oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}
 
   create_release:
@@ -74,33 +74,36 @@ jobs:
       - name: Download artifact for Python 3.8 (x86_64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf-3.8-x86_64"
+          name: "oblockperf_3.8_x86_64" # Use underscores consistently
           path: ./artifacts
 
       - name: Download artifact for Python 3.8 (arm64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf-3.8-arm64"
+          name: "oblockperf_3.8_arm64" # Use underscores consistently
           path: ./artifacts
 
       - name: Download artifact for Python 3.10 (x86_64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf-3.10-x86_64"
+          name: "oblockperf_3.10_x86_64" # Use underscores consistently
           path: ./artifacts
 
       - name: Download artifact for Python 3.10 (arm64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf-3.10-arm64"
+          name: "oblockperf_3.10_arm64" # Use underscores consistently
           path: ./artifacts
+
+      - name: List files for debugging
+        run: ls -R ./artifacts
 
       - name: Upload Python 3.8 (x86_64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf-3.8-x86_64
-          asset_name: oblockperf-3.8-x86_64
+          asset_path: ./artifacts/oblockperf_3.8_x86_64 # Use underscores consistently
+          asset_name: oblockperf_3.8_x86_64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -109,8 +112,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf-3.8-arm64
-          asset_name: oblockperf-3.8-arm64
+          asset_path: ./artifacts/oblockperf_3.8_arm64 # Use underscores consistently
+          asset_name: oblockperf_3.8_arm64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,8 +122,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf-3.10-x86_64
-          asset_name: oblockperf-3.10-x86_64
+          asset_path: ./artifacts/oblockperf_3.10_x86_64 # Use underscores consistently
+          asset_name: oblockperf_3.10_x86_64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -129,8 +132,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf-3.10-arm64
-          asset_name: oblockperf-3.10-arm64
+          asset_path: ./artifacts/oblockperf_3.10_arm64 # Use underscores consistently
+          asset_name: oblockperf_3.10_arm64
           asset_content_type: application/octet-stream
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
