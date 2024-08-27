@@ -43,16 +43,11 @@ jobs:
           cd src
           python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }} --static-libpython=yes blockperf/cli.py
 
-      - name: Package the output
-        run: |
-          cd build
-          tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: "oblockperf-${{ matrix.python-version }}"
-          path: build/oblockperf_${{ matrix.python-version }}.tar.gz
+          path: build/oblockperf_${{ matrix.python-version }}
 
   create_release:
     runs-on: ubuntu-latest
@@ -79,21 +74,21 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: "oblockperf-3.8"
-          path: ./artifacts # Download all artifacts into the same directory
+          path: ./artifacts
 
       - name: Download artifact for Python 3.10
         uses: actions/download-artifact@v4
         with:
           name: "oblockperf-3.10"
-          path: ./artifacts # Download all artifacts into the same directory
+          path: ./artifacts
 
       - name: Upload Python 3.8 artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf-3.8.tar.gz
-          asset_name: oblockperf-3.8.tar.gz
-          asset_content_type: application/gzip
+          asset_path: ./artifacts/oblockperf-3.8.zip # Reference the .zip file
+          asset_name: oblockperf-3.8.zip
+          asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -101,8 +96,8 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf-3.10.tar.gz
-          asset_name: oblockperf-3.10.tar.gz
-          asset_content_type: application/gzip
+          asset_path: ./artifacts/oblockperf-3.10.zip # Reference the .zip file
+          asset_name: oblockperf-3.10.zip
+          asset_content_type: application/zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
