@@ -9,9 +9,9 @@ on:
       - dev01
 
 env:
-  RELEASE_VERSION: "v0.1.0"
+  RELEASE_VERSION: "v0.1.1"
   RELEASE_DESCRIPTION: |
-    This blockperf release includes standalone x86_64 and arm64 Linux executables for systems on:
+    This blockperf release includes standalone x86_64 and arm64 Linux executables for:
     - Python 3.8
     - Python 3.10
 
@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.8', '3.10']
-        architecture: [x86_64, arm64] # Add both architectures
+        architecture: [x86_64, arm64]
     steps:
       - name: Checkout the code
         uses: actions/checkout@v3
@@ -37,18 +37,24 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y patchelf
-          pip install nuitka paho-mqtt
+          pip install nuitka paho-mqtt psutil
 
       - name: Build the executable with Nuitka (Static libpython)
         run: |
           cd src
-          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }} --static-libpython=yes blockperf/cli.py
+          python -m nuitka --onefile --standalone --include-module=paho.mqtt.client --include-module=psutil --output-dir=../build --output-filename=oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }} --static-libpython=yes blockperf/cli.py
+
+      - name: Package the output
+        run: |
+          cd build
+          mv oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }} oblockperf
+          zip oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}.zip oblockperf
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: "oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}" # Use underscores consistently
-          path: build/oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}
+          name: "oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}"
+          path: build/oblockperf_${{ matrix.python-version }}_${{ matrix.architecture }}.zip
 
   create_release:
     runs-on: ubuntu-latest
@@ -74,66 +80,33 @@ jobs:
       - name: Download artifact for Python 3.8 (x86_64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.8_x86_64" # Use underscores consistently
+          name: "oblockperf_3.8_x86_64"
           path: ./artifacts
 
       - name: Download artifact for Python 3.8 (arm64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.8_arm64" # Use underscores consistently
+          name: "oblockperf_3.8_arm64"
           path: ./artifacts
 
       - name: Download artifact for Python 3.10 (x86_64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.10_x86_64" # Use underscores consistently
+          name: "oblockperf_3.10_x86_64"
           path: ./artifacts
 
       - name: Download artifact for Python 3.10 (arm64)
         uses: actions/download-artifact@v4
         with:
-          name: "oblockperf_3.10_arm64" # Use underscores consistently
+          name: "oblockperf_3.10_arm64"
           path: ./artifacts
-
-      - name: List files for debugging
-        run: ls -R ./artifacts
 
       - name: Upload Python 3.8 (x86_64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.8_x86_64 # Use underscores consistently
-          asset_name: oblockperf_3.8_x86_64
-          asset_content_type: application/octet-stream
+          asset_path: ./artifacts/oblockperf_3.8_x86_64.zip
+          asset_name: oblockperf_3.8_x86_64.zip
+          asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Python 3.8 (arm64) artifact to the release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.8_arm64 # Use underscores consistently
-          asset_name: oblockperf_3.8_arm64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Python 3.10 (x86_64) artifact to the release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10_x86_64 # Use underscores consistently
-          asset_name: oblockperf_3.10_x86_64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Python 3.10 (arm64) artifact to the release
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts/oblockperf_3.10_arm64 # Use underscores consistently
-          asset_name: oblockperf_3.10_arm64
-          asset_content_type: application/octet-stream
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: 
