@@ -12,8 +12,8 @@ env:
   RELEASE_VERSION: "v0.1.1"
   RELEASE_DESCRIPTION: |
     This blockperf release includes standalone x86_64 and arm64 Linux executables for:
-    - Python 3.8 (built on Ubuntu 20.04 LTS)
-    - Python 3.10 (built on Ubuntu 22.04 LTS)
+    - Python 3.8
+    - Python 3.10
 
 jobs:
   build:
@@ -115,4 +115,29 @@ jobs:
       - name: Upload Python 3.8 (arm64) artifact to the release
         uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ steps.create
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/oblockperf_3.8_arm64.zip
+          asset_name: oblockperf_3.8_arm64.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Python 3.10 (x86_64) artifact to the release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/oblockperf_3.10_x86_64.zip
+          asset_name: oblockperf_3.10_x86_64.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Python 3.10 (arm64) artifact to the release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/oblockperf_3.10_arm64.zip
+          asset_name: oblockperf_3.10_arm64.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
