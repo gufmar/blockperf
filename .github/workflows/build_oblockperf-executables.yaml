@@ -49,9 +49,9 @@ jobs:
           tar -czvf oblockperf_${{ matrix.python-version }}.tar.gz oblockperf_${{ matrix.python-version }}
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4 # Consistent versioning
         with:
-          name: "oblockperf-${{ matrix.python-version }}" # Name used for the artifact
+          name: "oblockperf-${{ matrix.python-version }}" # The name used for the artifact
           path: build/oblockperf_${{ matrix.python-version }}.tar.gz
 
   create_release:
@@ -76,13 +76,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifact for Python 3.8
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4 # Consistent versioning
         with:
           name: "oblockperf-3.8" # Same name as used in the upload-artifact step
           path: ./artifacts/3.8 # Where the downloaded artifact will be saved
 
       - name: Download artifact for Python 3.10
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4 # Consistent versioning
         with:
           name: "oblockperf-3.10" # Same name as used in the upload-artifact step
           path: ./artifacts/3.10
