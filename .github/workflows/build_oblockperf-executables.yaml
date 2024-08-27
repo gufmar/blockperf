@@ -11,10 +11,10 @@ on:
 env:
   RELEASE_VERSION: "v0.1.0" # Set your desired release version here
   RELEASE_DESCRIPTION: |
-    ## Automated Release Notes
-    This release includes standalone executables for:
+    This blockperf release includes standalone x86 Linux executables for systems in a
     - Python 3.8
     - Python 3.10
+    environment.
 
 jobs:
   build:
