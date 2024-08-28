@@ -18,7 +18,7 @@ from blockperf.mqtt import MQTTClient
 
 
 logger = logging.getLogger(__name__)
-
+python_version = sys.version_info
 
 class App:
     app_config: AppConfig
@@ -275,7 +275,10 @@ class App:
                 logger.warning("Node log file does not exist %s", node_log_link)
                 time.sleep(2)
             try:
-                real_node_log = os.path.realpath(node_log_link, strict=True)
+                if python_version >= (3, 9):
+                    real_node_log = os.path.realpath(node_log_link, strict=True)
+                else:
+                    real_node_log = os.path.realpath(node_log_link)
                 node_logdir = self.app_config.node_logdir
                 assert node_logdir, "Node logdir not found"
                 return node_logdir.joinpath(real_node_log)
